@@ -5,17 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>日本零食分配小工具</title>
   <style>
-    :root{--bg:#f7f4ef;--card:#fffdf9;--ink:#2f2a24;--muted:#756b60;--line:#e5dacd;--accent:#9a5b36;--soft:#f0e4d8;--danger:#b44435;--ok:#2d7a4f}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC",sans-serif;line-height:1.5}main,header{max-width:1120px;margin:auto;padding:18px}h1{margin:8px 0;font-size:clamp(1.6rem,4vw,2.4rem)}p{color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 10px 25px rgba(55,42,30,.08)}h2{font-size:1.1rem;margin:0 0 12px}.row{display:grid;grid-template-columns:1fr 110px auto;gap:10px;align-items:end}.row.person{grid-template-columns:1fr auto}label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:5px}input,select,button,textarea{font:inherit;border-radius:12px}input,select,textarea{width:100%;border:1px solid var(--line);padding:10px 12px;background:white;color:var(--ink)}button{border:0;background:var(--accent);color:white;padding:10px 14px;cursor:pointer;white-space:nowrap}button.secondary{background:var(--soft);color:var(--ink)}button.danger{background:var(--danger)}button.small{padding:6px 9px;font-size:.86rem}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:white}table{width:100%;min-width:760px;border-collapse:collapse}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{background:#fbf7f1;color:var(--muted);font-size:.86rem}.num{text-align:right;font-variant-numeric:tabular-nums}.remain.ok{color:var(--ok);font-weight:800}.remain.zero{color:var(--muted);font-weight:800}.remain.bad{color:var(--danger);font-weight:900}.allocform{display:grid;grid-template-columns:1fr 80px auto;gap:8px}.inline{display:flex;gap:8px;align-items:center}.inline input{max-width:90px;padding:7px 9px}.list{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:14px;background:white;padding:12px}.item h3{margin:0 0 6px;font-size:1rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;border-radius:999px;background:var(--soft);padding:6px 10px}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.empty,.muted{color:var(--muted)}.notice{display:none;background:#fff3e6;border:1px solid #efd0ad;color:#6d4324;border-radius:14px;padding:10px 12px;margin-bottom:12px}textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86rem}@media(max-width:760px){.grid,.row,.row.person,.allocform{grid-template-columns:1fr}main,header{padding:14px}}
+    :root{--bg:#f7f4ef;--card:#fffdf9;--ink:#2f2a24;--muted:#756b60;--line:#e5dacd;--accent:#9a5b36;--soft:#f0e4d8;--danger:#b44435;--ok:#2d7a4f;--warn:#b57a22}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC",sans-serif;line-height:1.5}main,header{max-width:1120px;margin:auto;padding:18px}h1{margin:8px 0;font-size:clamp(1.6rem,4vw,2.4rem)}p{color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 10px 25px rgba(55,42,30,.08)}h2{font-size:1.1rem;margin:0 0 12px}.row{display:grid;grid-template-columns:1fr 110px auto;gap:10px;align-items:end}.row.person{grid-template-columns:1fr auto}.current{display:grid;grid-template-columns:1.4fr 120px auto auto;gap:10px;align-items:end}label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:5px}input,select,button,textarea{font:inherit;border-radius:12px}input,select,textarea{width:100%;border:1px solid var(--line);padding:10px 12px;background:white;color:var(--ink)}button{border:0;background:var(--accent);color:white;padding:10px 14px;cursor:pointer;white-space:nowrap}button.secondary{background:var(--soft);color:var(--ink)}button.ghost{background:white;color:var(--accent);border:1px solid var(--line)}button.danger{background:var(--danger)}button.small{padding:6px 9px;font-size:.86rem}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:white}table{width:100%;min-width:820px;border-collapse:collapse}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{background:#fbf7f1;color:var(--muted);font-size:.86rem}.num{text-align:right;font-variant-numeric:tabular-nums}.remain.ok{color:var(--ok);font-weight:800}.remain.zero{color:var(--muted);font-weight:800}.remain.bad{color:var(--danger);font-weight:900}.inline{display:flex;gap:8px;align-items:center}.inline input{max-width:90px;padding:7px 9px}.list{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:14px;background:white;padding:12px}.item h3{margin:0 0 6px;font-size:1rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;border-radius:999px;background:var(--soft);padding:6px 10px}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.empty,.muted{color:var(--muted)}.notice{display:none;background:#fff3e6;border:1px solid #efd0ad;color:#6d4324;border-radius:14px;padding:10px 12px;margin-bottom:12px}.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:white;border-radius:999px;padding:6px 10px;color:var(--muted);font-size:.9rem}.activeName{color:var(--accent);font-weight:800}.personHeader{display:flex;justify-content:space-between;gap:10px;align-items:center}.personHeader h3{margin:0}textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86rem}@media(max-width:760px){.grid,.row,.row.person,.current{grid-template-columns:1fr}main,header{padding:14px}table{min-width:900px}}
   </style>
 </head>
 <body>
   <header>
     <h1>日本零食分配小工具</h1>
-    <p>記錄每個零食初始數量、分給誰、剩下多少；也能反過來看每個人拿到哪些零食。資料存在這台裝置的瀏覽器本機。</p>
+    <p>先選「目前正在分配給誰」，再在零食表格直接按分配。舊版匯出的 JSON 可以直接匯入；同一個網址下原本的本機資料也會沿用。</p>
   </header>
   <main>
     <div id="notice" class="notice"></div>
+
+    <section class="card">
+      <h2>目前正在分配</h2>
+      <div class="current">
+        <div>
+          <label for="activePerson">目前對象</label>
+          <select id="activePerson"></select>
+        </div>
+        <div>
+          <label for="quickQty">每次分配數量</label>
+          <input id="quickQty" type="number" min="1" step="1" value="1">
+        </div>
+        <button id="nextPersonBtn" type="button" class="secondary">下一個人</button>
+        <button id="clearActiveBtn" type="button" class="ghost">取消選擇</button>
+      </div>
+      <p id="activeHint" class="muted"></p>
+    </section>
 
     <section class="grid">
       <div class="card">
@@ -36,7 +53,7 @@
     </section>
 
     <section class="card">
-      <h2>零食庫存與分配</h2>
+      <h2>零食庫存與快速分配</h2>
       <div id="snackTable"></div>
     </section>
 
@@ -47,7 +64,7 @@
 
     <section class="card">
       <h2>備份 / 匯入</h2>
-      <p>換裝置前可以先匯出 JSON。下次貼回來再按「匯入」。</p>
+      <p>換裝置前可以先匯出 JSON。下次貼回來再按「匯入」。舊版只有 snacks / people / allocations 的 JSON 也可以匯入。</p>
       <div class="tools">
         <button id="exportBtn" type="button" class="secondary">匯出 JSON</button>
         <button id="importBtn" type="button" class="secondary">匯入 JSON</button>
@@ -63,28 +80,80 @@
     const state=load();
 
     function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now()+Math.random().toString(16).slice(2)}
-    function load(){try{const x=JSON.parse(localStorage.getItem(KEY));return {snacks:x?.snacks||[],people:x?.people||[],allocations:x?.allocations||[]}}catch{return {snacks:[],people:[],allocations:[]}}}
+    function load(){
+      try{
+        const x=JSON.parse(localStorage.getItem(KEY));
+        return normalizeState(x);
+      }catch{return normalizeState(null)}
+    }
+    function normalizeState(x){
+      const s={
+        snacks:Array.isArray(x?.snacks)?x.snacks:[],
+        people:Array.isArray(x?.people)?x.people:[],
+        allocations:Array.isArray(x?.allocations)?x.allocations:[],
+        selectedPersonId:typeof x?.selectedPersonId==="string"?x.selectedPersonId:"",
+        quickQty:Math.max(1,Number(x?.quickQty||1))
+      };
+      s.snacks=s.snacks.filter(v=>v&&v.id&&v.name!==undefined).map(v=>({id:String(v.id),name:String(v.name),total:Math.max(0,Number(v.total||0))}));
+      s.people=s.people.filter(v=>v&&v.id&&v.name!==undefined).map(v=>({id:String(v.id),name:String(v.name)}));
+      s.allocations=s.allocations.filter(v=>v&&v.id&&v.snackId&&v.personId).map(v=>({id:String(v.id),snackId:String(v.snackId),personId:String(v.personId),qty:Math.max(1,Number(v.qty||1))}));
+      s.allocations=s.allocations.filter(a=>s.snacks.some(sn=>sn.id===a.snackId)&&s.people.some(p=>p.id===a.personId));
+      if(!s.people.some(p=>p.id===s.selectedPersonId)) s.selectedPersonId=s.people[0]?.id||"";
+      return s;
+    }
     function save(){localStorage.setItem(KEY,JSON.stringify(state))}
     function msg(t){const n=$("notice");n.textContent=t;n.style.display="block";clearTimeout(msg.timer);msg.timer=setTimeout(()=>n.style.display="none",2600)}
     function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
     function snack(id){return state.snacks.find(x=>x.id===id)}
     function person(id){return state.people.find(x=>x.id===id)}
+    function activePerson(){return person(state.selectedPersonId)}
     function used(snackId){return state.allocations.filter(a=>a.snackId===snackId).reduce((s,a)=>s+Number(a.qty||0),0)}
     function left(snackId){const s=snack(snackId);return Number(s?.total||0)-used(snackId)}
+    function personItems(personId){return state.allocations.filter(a=>a.personId===personId)}
 
-    function render(){save();renderSnacks();renderAllocations();renderPeople()}
+    function render(){save();renderCurrentPerson();renderSnacks();renderAllocations();renderPeople()}
+
+    function renderCurrentPerson(){
+      const sel=$("activePerson");
+      if(!state.people.length){
+        sel.innerHTML='<option value="">尚未新增對象</option>';
+        sel.value="";
+        $("activeHint").innerHTML='先新增要送的人，之後就可以固定目前對象快速分配。';
+        return;
+      }
+      sel.innerHTML=state.people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      if(!state.people.some(p=>p.id===state.selectedPersonId)) state.selectedPersonId=state.people[0].id;
+      sel.value=state.selectedPersonId;
+      const p=activePerson();
+      const count=personItems(state.selectedPersonId).length;
+      $("activeHint").innerHTML=p?`現在按零食旁邊的分配按鈕，都會分給 <span class="activeName">${esc(p.name)}</span>。目前這個人已有 ${count} 種零食。`:"目前沒有選擇對象。";
+      $("quickQty").value=state.quickQty;
+    }
 
     function renderSnacks(){
       const root=$("snackTable");
       if(!state.snacks.length){root.innerHTML='<div class="empty">還沒有零食。先新增零食名稱和初始數量。</div>';return}
-      const opts=state.people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      const p=activePerson();
+      const qty=Math.max(1,Number(state.quickQty||1));
       const rows=state.snacks.map(s=>{
         const u=used(s.id), r=left(s.id), cls=r>0?"ok":r===0?"zero":"bad";
-        const form=state.people.length?`<form class="allocform" data-snack="${s.id}"><select name="person">${opts}</select><input name="qty" type="number" min="1" step="1" value="1"><button class="small">分配</button></form>`:'<span class="muted">先新增要送的人</span>';
-        return `<tr><td><strong>${esc(s.name)}</strong></td><td><div class="inline"><input data-total="${s.id}" type="number" min="0" step="1" value="${Number(s.total||0)}"><button class="small secondary" data-settotal="${s.id}">更新</button></div></td><td class="num">${u}</td><td class="num remain ${cls}">${r}</td><td>${form}</td><td><button class="small danger" data-del-snack="${s.id}">刪除</button></td></tr>`
+        const assignedToActive=p?state.allocations.find(a=>a.snackId===s.id&&a.personId===p.id):null;
+        const activeText=assignedToActive?`已給 ${Number(assignedToActive.qty)>1?Number(assignedToActive.qty):1}`:"尚未給";
+        const disabled=(!p||r<=0)?"disabled":"";
+        return `<tr>
+          <td><strong>${esc(s.name)}</strong></td>
+          <td><div class="inline"><input data-total="${s.id}" type="number" min="0" step="1" value="${Number(s.total||0)}"><button class="small secondary" data-settotal="${s.id}">更新</button></div></td>
+          <td class="num">${u}</td>
+          <td class="num remain ${cls}">${r}</td>
+          <td>${p?`<span class="pill">${esc(p.name)}：${activeText}</span>`:'<span class="muted">未選擇對象</span>'}</td>
+          <td><button class="small" data-quick="${s.id}" ${disabled}>+${qty} 給目前對象</button></td>
+          <td><button class="small secondary" data-quickone="${s.id}" ${disabled}>+1</button></td>
+          <td><button class="small danger" data-del-snack="${s.id}">刪除</button></td>
+        </tr>`
       }).join("");
-      root.innerHTML=`<div class="tablewrap"><table><thead><tr><th>零食</th><th>初始數量</th><th class="num">已分配</th><th class="num">剩餘</th><th>分配給誰</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
-      document.querySelectorAll(".allocform").forEach(f=>f.onsubmit=e=>{e.preventDefault();addAllocation(f.dataset.snack,f.person.value,parseInt(f.qty.value||"1",10))});
+      root.innerHTML=`<div class="tablewrap"><table><thead><tr><th>零食</th><th>初始數量</th><th class="num">已分配</th><th class="num">剩餘</th><th>目前對象狀態</th><th>快速分配</th><th>+1</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      document.querySelectorAll("[data-quick]").forEach(b=>b.onclick=()=>addAllocation(b.dataset.quick,state.selectedPersonId,Math.max(1,Number(state.quickQty||1))));
+      document.querySelectorAll("[data-quickone]").forEach(b=>b.onclick=()=>addAllocation(b.dataset.quickone,state.selectedPersonId,1));
       document.querySelectorAll("[data-settotal]").forEach(b=>b.onclick=()=>setTotal(b.dataset.settotal,parseInt(document.querySelector(`[data-total="${CSS.escape(b.dataset.settotal)}"]`).value||"0",10)));
       document.querySelectorAll("[data-del-snack]").forEach(b=>b.onclick=()=>delSnack(b.dataset.delSnack));
     }
@@ -94,8 +163,9 @@
       if(!state.allocations.length){root.innerHTML='<div class="empty">還沒有分配紀錄。</div>';return}
       root.innerHTML=[...state.allocations].sort((a,b)=>(person(a.personId)?.name||"").localeCompare(person(b.personId)?.name||"","zh-Hant")).map(a=>{
         const s=snack(a.snackId), p=person(a.personId); if(!s||!p)return "";
-        return `<div class="item"><h3>${esc(p.name)} ← ${esc(s.name)}${Number(a.qty)>1?` × ${Number(a.qty)}`:""}</h3><div class="tools"><button class="small secondary" data-minus="${a.id}">-1</button><button class="small secondary" data-plus="${a.id}">+1</button><button class="small danger" data-del-alloc="${a.id}">刪除這筆</button></div></div>`
+        return `<div class="item"><h3>${esc(p.name)} ← ${esc(s.name)}${Number(a.qty)>1?` × ${Number(a.qty)}`:""}</h3><div class="tools"><button class="small ghost" data-active-person="${p.id}">設為目前對象</button><button class="small secondary" data-minus="${a.id}">-1</button><button class="small secondary" data-plus="${a.id}">+1</button><button class="small danger" data-del-alloc="${a.id}">刪除這筆</button></div></div>`
       }).join("");
+      document.querySelectorAll("[data-active-person]").forEach(b=>b.onclick=()=>{state.selectedPersonId=b.dataset.activePerson;render()});
       document.querySelectorAll("[data-minus]").forEach(b=>b.onclick=()=>adjust(b.dataset.minus,-1));
       document.querySelectorAll("[data-plus]").forEach(b=>b.onclick=()=>adjust(b.dataset.plus,1));
       document.querySelectorAll("[data-del-alloc]").forEach(b=>b.onclick=()=>{state.allocations=state.allocations.filter(a=>a.id!==b.dataset.delAlloc);render()});
@@ -106,24 +176,31 @@
       if(!state.people.length){root.innerHTML='<div class="empty">還沒有收禮對象。</div>';return}
       root.innerHTML=state.people.map(p=>{
         const chips=state.allocations.filter(a=>a.personId===p.id).map(a=>{const s=snack(a.snackId);return s?`<span class="chip">${esc(s.name)}${Number(a.qty)>1?` × ${Number(a.qty)}`:""}</span>`:""}).join("");
-        return `<div class="item"><h3>${esc(p.name)}</h3>${chips?`<div class="chips">${chips}</div>`:'<p class="muted">尚未分配</p>'}<div class="tools"><button class="small danger" data-del-person="${p.id}">刪除這個人</button></div></div>`
+        const active=p.id===state.selectedPersonId?'<span class="pill">目前對象</span>':'';
+        return `<div class="item"><div class="personHeader"><h3>${esc(p.name)}</h3>${active}</div>${chips?`<div class="chips">${chips}</div>`:'<p class="muted">尚未分配</p>'}<div class="tools"><button class="small secondary" data-set-active="${p.id}">設為目前分配對象</button><button class="small danger" data-del-person="${p.id}">刪除這個人</button></div></div>`
       }).join("");
+      document.querySelectorAll("[data-set-active]").forEach(b=>b.onclick=()=>{state.selectedPersonId=b.dataset.setActive;render()});
       document.querySelectorAll("[data-del-person]").forEach(b=>b.onclick=()=>delPerson(b.dataset.delPerson));
     }
 
     function addSnack(name,total){name=name.trim();if(!name)return msg("請輸入零食名稱。");if(state.snacks.some(s=>s.name===name))return msg("這個零食名稱已經存在。");state.snacks.push({id:uid(),name,total:Math.max(0,Number(total||0))});render()}
-    function addPerson(name){name=name.trim();if(!name)return msg("請輸入姓名或代號。");if(state.people.some(p=>p.name===name))return msg("這個人已經存在。");state.people.push({id:uid(),name});render()}
-    function addAllocation(snackId,personId,qty){const s=snack(snackId),p=person(personId);if(!s||!p)return;qty=Math.max(1,qty||1);if(qty>left(snackId))return msg(`${s.name} 只剩 ${left(snackId)} 個，不能再分 ${qty} 個。`);const old=state.allocations.find(a=>a.snackId===snackId&&a.personId===personId);old?old.qty=Number(old.qty||0)+qty:state.allocations.push({id:uid(),snackId,personId,qty});render()}
+    function addPerson(name){name=name.trim();if(!name)return msg("請輸入姓名或代號。");if(state.people.some(p=>p.name===name))return msg("這個人已經存在。");const id=uid();state.people.push({id,name});if(!state.selectedPersonId)state.selectedPersonId=id;render()}
+    function addAllocation(snackId,personId,qty){const s=snack(snackId),p=person(personId);if(!p)return msg("請先選擇目前正在分配給誰。");if(!s)return;qty=Math.max(1,Number(qty||1));if(qty>left(snackId))return msg(`${s.name} 只剩 ${left(snackId)} 個，不能再分 ${qty} 個。`);const old=state.allocations.find(a=>a.snackId===snackId&&a.personId===personId);old?old.qty=Number(old.qty||0)+qty:state.allocations.push({id:uid(),snackId,personId,qty});render()}
     function adjust(id,d){const a=state.allocations.find(x=>x.id===id);if(!a)return;if(d>0&&left(a.snackId)<=0)return msg("這個零食沒有剩餘數量可以再加。");a.qty=Number(a.qty||0)+d;if(a.qty<=0)state.allocations=state.allocations.filter(x=>x.id!==id);render()}
-    function setTotal(id,total){const s=snack(id);if(!s)return;total=Math.max(0,total||0);if(total<used(id))return msg(`目前已分配 ${used(id)} 個，初始數量不能小於已分配數。`);s.total=total;render()}
+    function setTotal(id,total){const s=snack(id);if(!s)return;total=Math.max(0,Number(total||0));if(total<used(id))return msg(`目前已分配 ${used(id)} 個，初始數量不能小於已分配數。`);s.total=total;render()}
     function delSnack(id){const s=snack(id);if(!s||!confirm(`刪除「${s.name}」？相關分配紀錄也會一起刪除。`))return;state.snacks=state.snacks.filter(x=>x.id!==id);state.allocations=state.allocations.filter(a=>a.snackId!==id);render()}
-    function delPerson(id){const p=person(id);if(!p||!confirm(`刪除「${p.name}」？相關分配紀錄也會一起刪除。`))return;state.people=state.people.filter(x=>x.id!==id);state.allocations=state.allocations.filter(a=>a.personId!==id);render()}
+    function delPerson(id){const p=person(id);if(!p||!confirm(`刪除「${p.name}」？相關分配紀錄也會一起刪除。`))return;state.people=state.people.filter(x=>x.id!==id);state.allocations=state.allocations.filter(a=>a.personId!==id);if(state.selectedPersonId===id)state.selectedPersonId=state.people[0]?.id||"";render()}
+    function nextPerson(){if(!state.people.length)return;const i=state.people.findIndex(p=>p.id===state.selectedPersonId);state.selectedPersonId=state.people[(i+1+state.people.length)%state.people.length].id;render()}
 
     $("snackForm").onsubmit=e=>{e.preventDefault();addSnack($("snackName").value,$("snackTotal").value);$("snackName").value="";$("snackTotal").value=1;$("snackName").focus()};
     $("personForm").onsubmit=e=>{e.preventDefault();addPerson($("personName").value);$("personName").value="";$("personName").focus()};
+    $("activePerson").onchange=e=>{state.selectedPersonId=e.target.value;render()};
+    $("quickQty").onchange=e=>{state.quickQty=Math.max(1,Number(e.target.value||1));render()};
+    $("nextPersonBtn").onclick=nextPerson;
+    $("clearActiveBtn").onclick=()=>{state.selectedPersonId="";render()};
     $("exportBtn").onclick=()=>{$("backupBox").value=JSON.stringify(state,null,2);$("backupBox").select();msg("已匯出。可以複製這段 JSON 備份。")} ;
-    $("importBtn").onclick=()=>{try{const x=JSON.parse($("backupBox").value);if(!Array.isArray(x.snacks)||!Array.isArray(x.people)||!Array.isArray(x.allocations))throw Error();state.snacks=x.snacks;state.people=x.people;state.allocations=x.allocations;render();msg("已匯入。")}catch{msg("匯入失敗。請確認貼上的是這個工具匯出的 JSON。")}};
-    $("clearBtn").onclick=()=>{if(!confirm("確定清空全部資料？"))return;state.snacks=[];state.people=[];state.allocations=[];$("backupBox").value="";render()};
+    $("importBtn").onclick=()=>{try{const x=normalizeState(JSON.parse($("backupBox").value));state.snacks=x.snacks;state.people=x.people;state.allocations=x.allocations;state.selectedPersonId=x.selectedPersonId;state.quickQty=x.quickQty;render();msg("已匯入。舊版 JSON 也已轉成新版格式。")}catch{msg("匯入失敗。請確認貼上的是這個工具匯出的 JSON。")}};
+    $("clearBtn").onclick=()=>{if(!confirm("確定清空全部資料？"))return;state.snacks=[];state.people=[];state.allocations=[];state.selectedPersonId="";state.quickQty=1;$("backupBox").value="";render()};
     render();
   </script>
 </body>
