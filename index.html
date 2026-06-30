@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>日本零食分配小工具</title>
+  <style>
+    :root{--bg:#f7f4ef;--card:#fffdf9;--ink:#2f2a24;--muted:#756b60;--line:#e5dacd;--accent:#9a5b36;--soft:#f0e4d8;--danger:#b44435;--ok:#2d7a4f}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC",sans-serif;line-height:1.5}main,header{max-width:1120px;margin:auto;padding:18px}h1{margin:8px 0;font-size:clamp(1.6rem,4vw,2.4rem)}p{color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 10px 25px rgba(55,42,30,.08)}h2{font-size:1.1rem;margin:0 0 12px}.row{display:grid;grid-template-columns:1fr 110px auto;gap:10px;align-items:end}.row.person{grid-template-columns:1fr auto}label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:5px}input,select,button,textarea{font:inherit;border-radius:12px}input,select,textarea{width:100%;border:1px solid var(--line);padding:10px 12px;background:white;color:var(--ink)}button{border:0;background:var(--accent);color:white;padding:10px 14px;cursor:pointer;white-space:nowrap}button.secondary{background:var(--soft);color:var(--ink)}button.danger{background:var(--danger)}button.small{padding:6px 9px;font-size:.86rem}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:white}table{width:100%;min-width:760px;border-collapse:collapse}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{background:#fbf7f1;color:var(--muted);font-size:.86rem}.num{text-align:right;font-variant-numeric:tabular-nums}.remain.ok{color:var(--ok);font-weight:800}.remain.zero{color:var(--muted);font-weight:800}.remain.bad{color:var(--danger);font-weight:900}.allocform{display:grid;grid-template-columns:1fr 80px auto;gap:8px}.inline{display:flex;gap:8px;align-items:center}.inline input{max-width:90px;padding:7px 9px}.list{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:14px;background:white;padding:12px}.item h3{margin:0 0 6px;font-size:1rem}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;border-radius:999px;background:var(--soft);padding:6px 10px}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.empty,.muted{color:var(--muted)}.notice{display:none;background:#fff3e6;border:1px solid #efd0ad;color:#6d4324;border-radius:14px;padding:10px 12px;margin-bottom:12px}textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86rem}@media(max-width:760px){.grid,.row,.row.person,.allocform{grid-template-columns:1fr}main,header{padding:14px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>日本零食分配小工具</h1>
+    <p>記錄每個零食初始數量、分給誰、剩下多少；也能反過來看每個人拿到哪些零食。資料存在這台裝置的瀏覽器本機。</p>
+  </header>
+  <main>
+    <div id="notice" class="notice"></div>
+
+    <section class="grid">
+      <div class="card">
+        <h2>新增零食</h2>
+        <form id="snackForm" class="row">
+          <div><label>零食名稱</label><input id="snackName" placeholder="例：水無月、抹茶餅乾、KitKat" autocomplete="off"></div>
+          <div><label>初始數量</label><input id="snackTotal" type="number" min="0" step="1" value="1"></div>
+          <button>新增</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>新增要送的人</h2>
+        <form id="personForm" class="row person">
+          <div><label>姓名 / 代號</label><input id="personName" placeholder="例：X、Y、學姊、家人" autocomplete="off"></div>
+          <button>新增</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>零食庫存與分配</h2>
+      <div id="snackTable"></div>
+    </section>
+
+    <section class="grid">
+      <div class="card"><h2>目前分配紀錄</h2><div id="allocationList" class="list"></div></div>
+      <div class="card"><h2>每個人拿什麼</h2><div id="personSummary" class="list"></div></div>
+    </section>
+
+    <section class="card">
+      <h2>備份 / 匯入</h2>
+      <p>換裝置前可以先匯出 JSON。下次貼回來再按「匯入」。</p>
+      <div class="tools">
+        <button id="exportBtn" type="button" class="secondary">匯出 JSON</button>
+        <button id="importBtn" type="button" class="secondary">匯入 JSON</button>
+        <button id="clearBtn" type="button" class="danger">清空全部</button>
+      </div>
+      <textarea id="backupBox" placeholder="匯出的資料會在這裡；也可以把備份貼在這裡後匯入。"></textarea>
+    </section>
+  </main>
+
+  <script>
+    const KEY="japanSnackGiftPlanner.v1";
+    const $=id=>document.getElementById(id);
+    const state=load();
+
+    function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now()+Math.random().toString(16).slice(2)}
+    function load(){try{const x=JSON.parse(localStorage.getItem(KEY));return {snacks:x?.snacks||[],people:x?.people||[],allocations:x?.allocations||[]}}catch{return {snacks:[],people:[],allocations:[]}}}
+    function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+    function msg(t){const n=$("notice");n.textContent=t;n.style.display="block";clearTimeout(msg.timer);msg.timer=setTimeout(()=>n.style.display="none",2600)}
+    function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+    function snack(id){return state.snacks.find(x=>x.id===id)}
+    function person(id){return state.people.find(x=>x.id===id)}
+    function used(snackId){return state.allocations.filter(a=>a.snackId===snackId).reduce((s,a)=>s+Number(a.qty||0),0)}
+    function left(snackId){const s=snack(snackId);return Number(s?.total||0)-used(snackId)}
+
+    function render(){save();renderSnacks();renderAllocations();renderPeople()}
+
+    function renderSnacks(){
+      const root=$("snackTable");
+      if(!state.snacks.length){root.innerHTML='<div class="empty">還沒有零食。先新增零食名稱和初始數量。</div>';return}
+      const opts=state.people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+      const rows=state.snacks.map(s=>{
+        const u=used(s.id), r=left(s.id), cls=r>0?"ok":r===0?"zero":"bad";
+        const form=state.people.length?`<form class="allocform" data-snack="${s.id}"><select name="person">${opts}</select><input name="qty" type="number" min="1" step="1" value="1"><button class="small">分配</button></form>`:'<span class="muted">先新增要送的人</span>';
+        return `<tr><td><strong>${esc(s.name)}</strong></td><td><div class="inline"><input data-total="${s.id}" type="number" min="0" step="1" value="${Number(s.total||0)}"><button class="small secondary" data-settotal="${s.id}">更新</button></div></td><td class="num">${u}</td><td class="num remain ${cls}">${r}</td><td>${form}</td><td><button class="small danger" data-del-snack="${s.id}">刪除</button></td></tr>`
+      }).join("");
+      root.innerHTML=`<div class="tablewrap"><table><thead><tr><th>零食</th><th>初始數量</th><th class="num">已分配</th><th class="num">剩餘</th><th>分配給誰</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      document.querySelectorAll(".allocform").forEach(f=>f.onsubmit=e=>{e.preventDefault();addAllocation(f.dataset.snack,f.person.value,parseInt(f.qty.value||"1",10))});
+      document.querySelectorAll("[data-settotal]").forEach(b=>b.onclick=()=>setTotal(b.dataset.settotal,parseInt(document.querySelector(`[data-total="${CSS.escape(b.dataset.settotal)}"]`).value||"0",10)));
+      document.querySelectorAll("[data-del-snack]").forEach(b=>b.onclick=()=>delSnack(b.dataset.delSnack));
+    }
+
+    function renderAllocations(){
+      const root=$("allocationList");
+      if(!state.allocations.length){root.innerHTML='<div class="empty">還沒有分配紀錄。</div>';return}
+      root.innerHTML=[...state.allocations].sort((a,b)=>(person(a.personId)?.name||"").localeCompare(person(b.personId)?.name||"","zh-Hant")).map(a=>{
+        const s=snack(a.snackId), p=person(a.personId); if(!s||!p)return "";
+        return `<div class="item"><h3>${esc(p.name)} ← ${esc(s.name)}${Number(a.qty)>1?` × ${Number(a.qty)}`:""}</h3><div class="tools"><button class="small secondary" data-minus="${a.id}">-1</button><button class="small secondary" data-plus="${a.id}">+1</button><button class="small danger" data-del-alloc="${a.id}">刪除這筆</button></div></div>`
+      }).join("");
+      document.querySelectorAll("[data-minus]").forEach(b=>b.onclick=()=>adjust(b.dataset.minus,-1));
+      document.querySelectorAll("[data-plus]").forEach(b=>b.onclick=()=>adjust(b.dataset.plus,1));
+      document.querySelectorAll("[data-del-alloc]").forEach(b=>b.onclick=()=>{state.allocations=state.allocations.filter(a=>a.id!==b.dataset.delAlloc);render()});
+    }
+
+    function renderPeople(){
+      const root=$("personSummary");
+      if(!state.people.length){root.innerHTML='<div class="empty">還沒有收禮對象。</div>';return}
+      root.innerHTML=state.people.map(p=>{
+        const chips=state.allocations.filter(a=>a.personId===p.id).map(a=>{const s=snack(a.snackId);return s?`<span class="chip">${esc(s.name)}${Number(a.qty)>1?` × ${Number(a.qty)}`:""}</span>`:""}).join("");
+        return `<div class="item"><h3>${esc(p.name)}</h3>${chips?`<div class="chips">${chips}</div>`:'<p class="muted">尚未分配</p>'}<div class="tools"><button class="small danger" data-del-person="${p.id}">刪除這個人</button></div></div>`
+      }).join("");
+      document.querySelectorAll("[data-del-person]").forEach(b=>b.onclick=()=>delPerson(b.dataset.delPerson));
+    }
+
+    function addSnack(name,total){name=name.trim();if(!name)return msg("請輸入零食名稱。");if(state.snacks.some(s=>s.name===name))return msg("這個零食名稱已經存在。");state.snacks.push({id:uid(),name,total:Math.max(0,Number(total||0))});render()}
+    function addPerson(name){name=name.trim();if(!name)return msg("請輸入姓名或代號。");if(state.people.some(p=>p.name===name))return msg("這個人已經存在。");state.people.push({id:uid(),name});render()}
+    function addAllocation(snackId,personId,qty){const s=snack(snackId),p=person(personId);if(!s||!p)return;qty=Math.max(1,qty||1);if(qty>left(snackId))return msg(`${s.name} 只剩 ${left(snackId)} 個，不能再分 ${qty} 個。`);const old=state.allocations.find(a=>a.snackId===snackId&&a.personId===personId);old?old.qty=Number(old.qty||0)+qty:state.allocations.push({id:uid(),snackId,personId,qty});render()}
+    function adjust(id,d){const a=state.allocations.find(x=>x.id===id);if(!a)return;if(d>0&&left(a.snackId)<=0)return msg("這個零食沒有剩餘數量可以再加。");a.qty=Number(a.qty||0)+d;if(a.qty<=0)state.allocations=state.allocations.filter(x=>x.id!==id);render()}
+    function setTotal(id,total){const s=snack(id);if(!s)return;total=Math.max(0,total||0);if(total<used(id))return msg(`目前已分配 ${used(id)} 個，初始數量不能小於已分配數。`);s.total=total;render()}
+    function delSnack(id){const s=snack(id);if(!s||!confirm(`刪除「${s.name}」？相關分配紀錄也會一起刪除。`))return;state.snacks=state.snacks.filter(x=>x.id!==id);state.allocations=state.allocations.filter(a=>a.snackId!==id);render()}
+    function delPerson(id){const p=person(id);if(!p||!confirm(`刪除「${p.name}」？相關分配紀錄也會一起刪除。`))return;state.people=state.people.filter(x=>x.id!==id);state.allocations=state.allocations.filter(a=>a.personId!==id);render()}
+
+    $("snackForm").onsubmit=e=>{e.preventDefault();addSnack($("snackName").value,$("snackTotal").value);$("snackName").value="";$("snackTotal").value=1;$("snackName").focus()};
+    $("personForm").onsubmit=e=>{e.preventDefault();addPerson($("personName").value);$("personName").value="";$("personName").focus()};
+    $("exportBtn").onclick=()=>{$("backupBox").value=JSON.stringify(state,null,2);$("backupBox").select();msg("已匯出。可以複製這段 JSON 備份。")} ;
+    $("importBtn").onclick=()=>{try{const x=JSON.parse($("backupBox").value);if(!Array.isArray(x.snacks)||!Array.isArray(x.people)||!Array.isArray(x.allocations))throw Error();state.snacks=x.snacks;state.people=x.people;state.allocations=x.allocations;render();msg("已匯入。")}catch{msg("匯入失敗。請確認貼上的是這個工具匯出的 JSON。")}};
+    $("clearBtn").onclick=()=>{if(!confirm("確定清空全部資料？"))return;state.snacks=[];state.people=[];state.allocations=[];$("backupBox").value="";render()};
+    render();
+  </script>
+</body>
+</html>
